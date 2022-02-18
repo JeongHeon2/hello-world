@@ -1,7 +1,11 @@
-# What is it?
+What is it?
+===========
+
 TextFeatureSelection is a Python library which helps improve text classification models through feature selection. It has 3 methods `TextFeatureSelection`, `TextFeatureSelectionGA` and `TextFeatureSelectionEnsemble` methods respectively.
 
-# First method: TextFeatureSelection
+First method: TextFeatureSelection
+=================
+
 It follows the `filter` method for feature selection. It provides a score for each word token. We can set a threshold for the score to decide which words to be included. There are 4 algorithms in this method, as follows.
 
   - **Chi-square** It measures the lack of independence between term(t) and class(c). It has a natural value of zero if t and c are independent. If it is higher, then term is dependent. It is not reliable for low-frequency terms 
@@ -16,8 +20,11 @@ It has below parameters
   - **stop_words** Words for which you will not want to have metric values calculated. Default is blank
   - **metric_list** List object which has the metric to be calculated. There are 4 metric which are being computed as 'MI','CHI','PD','IG'. you can specify one or more than one as a list object. Default is ['MI','CHI','PD','IG']. Chi-square(CHI), Mutual information(MI), Proportional difference(PD) and Information gain(IG) are 4 metric which are calculated for each tokenized word from the corpus to aid the user for feature selection.
 
-# How to use is it?
+How to use is it?
+=================
+
 ```python
+
 from TextFeatureSelection import TextFeatureSelection
 
 #Multiclass classification problem
@@ -34,15 +41,17 @@ target=[1,1,0,1]
 fsOBJ=TextFeatureSelection(target=target,input_doc_list=input_doc_list)
 result_df=fsOBJ.getScore()
 print(result_df)
-
 ```
 
-# Second method: TextFeatureSelectionGA
+Second method: TextFeatureSelectionGA
+=================
+
 It follows the `genetic algorithm` method. This is a population based metaheuristics search algorithm. It returns the optimal set of word tokens which give the best possible model score.
 
 Its parameters are divided into 2 groups.
 
 a) Genetic algorithm parameters: These are provided during object initialization.
+
   - **generations** Number of generations to run genetic algorithm. 500 as deafult, as used in the original paper
   - **population** Number of individual chromosomes. 50 as default, as used in the original paper
   - **prob_crossover** Probability of crossover. 0.9 as default, as used in the original paper
@@ -131,22 +140,30 @@ b) Machine learning model and tfidf parameters: These are provided during functi
   - **lowercase** bool, default=True
             Convert all characters to lowercase before tokenizing.        
 
-# How to use is it?
+How to use is it?
+=================
+
 ```python
+
 from TextFeatureSelection import TextFeatureSelectionGA
+
 #Input documents: doc_list
 #Input labels: label_list
+
 getGAobj=TextFeatureSelectionGA(percentage_of_token=60)
 best_vocabulary=getGAobj.getGeneticFeatures(doc_list=doc_list,label_list=label_list)
+
 ```
 
-# Third method: TextFeatureSelectionEnsemble
+
+Third method: TextFeatureSelectionEnsemble
+=================
 
 TextFeatureSelectionEnsemble helps ensemble multiple models to find best model combination with highest performance.
 
 It uses grid search and document frequency for reducing vector size for individual models. This makes individual models less complex and computationally faster. At the ensemble learning layer, genetic algorithm is used for identifying the smallest possible combination of individual models which has the highest impact on ensemble model performance.
 
-Base Model Parameters
+    Base Model Parameters
 
     
   - **doc_list** Python list with text documents for training base models
@@ -197,18 +214,19 @@ Base Model Parameters
   - **base_model_list** List of machine learning algorithms to be trained as base models for ensemble layer training.
   Available options are 'LogisticRegression','XGBClassifier','AdaBoostClassifier','RandomForestClassifier','ExtraTreesClassifier','KNeighborsClassifier'
   Default is ['LogisticRegression','XGBClassifier','AdaBoostClassifier','RandomForestClassifier','ExtraTreesClassifier','KNeighborsClassifier']
-    
   
-Genetic algorithm feature selection parameters for ensemble model
+
+    Genetic algorithm feature selection parameters for ensemble model
+
     
   - **GAparameters** Parameters for genetic algorithm feature selection for ensemble learning. This is used for identifying best combination of base models for ensemble learning.
   It helps remove models which has no contribution for ensemble learning and keep only important models.
   GeneticAlgorithmFS module is used from EvolutionaryFS python library.
   Refer documentation for GeneticAlgorithmFS at: https://pypi.org/project/EvolutionaryFS/ and example usage of GeneticAlgorithmFS for feature selection: https://www.kaggle.com/azimulh/feature-selection-using-evolutionaryfs-library
-  Parameters used are Parameters used are {"model_object":LogisticRegression(n_jobs=-1,random_state=1),"cost_function":f1_score,"average":'micro',"cost_function_improvement":'increase',"generations":20,"population":30,"prob_crossover":0.9,"prob_mutation":0.1,"run_time":60000}
+  Parameters used are {"model_object":LogisticRegression(n_jobs=-1,random_state=1),"cost_function":f1_score,"average":'micro',"cost_function_improvement":'increase',"generations":20,"population":30,"prob_crossover":0.9,"prob_mutation":0.1,"run_time":60000}
     
     
-  Output are saved in 4 folders
+    Output are saved in 4 folders
 
     
   - **model** It has base models
@@ -222,7 +240,10 @@ Genetic algorithm feature selection parameters for ensemble model
     Apart from above 4, it also saves and return list of columns which are used in ensemble layer with name best_ensemble_columns
     These columns are used in the exact same order for feature matrix in ensemble layer.
 
-# How to use is it?
+
+How to use is it?
+=================
+
 ```python
 
 imdb_data=pd.read_csv('../input/IMDB Dataset.csv')
@@ -236,28 +257,38 @@ label_list=imdb_data['labels'].tolist()
 # Initialize parameter for TextFeatureSelectionEnsemble and start training
 gaObj=TextFeatureSelectionEnsemble(doc_list,label_list,n_crossvalidation=2,pickle_path='/home/user/folder/',average='micro',base_model_list=['LogisticRegression','RandomForestClassifier','ExtraTreesClassifier','KNeighborsClassifier'])
 best_columns=gaObj.doTFSE()
+
 ```
 
 
+Where to get it?
+================
 
-# Where to get it?
 `pip install TextFeatureSelection`
 
-# Dependencies
+Dependencies
+============
+
+ - [numpy](https://www.numpy.org/)
+
  - [pandas](https://pandas.pydata.org/)
+
  - [scikit-learn](https://scikit-learn.org/stable/)
+
  - [xgboost](https://xgboost.readthedocs.io/en/latest/)
+
  - [nltk](https://www.nltk.org/)
+
  - [EvolutionaryFS](https://pypi.org/project/EvolutionaryFS/)
+
  - [collections](https://docs.python.org/2/library/collections.html)
 
-# References
+References
+============
+
  - [A Comparative Study on Feature Selection in Text Categorization](http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=E5CC43FE63A1627AB4C0DBD2061FE4B9?doi=10.1.1.32.9956&rep=rep1&type=pdf) by Yiming Yang and Jan O. Pedersen
-
  - [Entropy based feature selection for text categorization](https://hal.archives-ouvertes.fr/hal-00617969/document) by Christine Largeron, Christophe Moulin, Mathias Géry
-
  - [Categorical Proportional Difference: A Feature Selection Method for Text Categorization](https://pdfs.semanticscholar.org/6569/9f0e1159a40042cc766139f3dfac2a3860bb.pdf) by Mondelle Simeon, Robert J. Hilderman
-
  - [Feature Selection and Weighting Methods in Sentiment Analysis](https://www.researchgate.net/publication/242088860_Feature_Selection_and_Weighting_Methods_in_Sentiment_Analysis) by Tim O`Keefe and Irena Koprinska
- 
  - [Feature Selection For Text Classification Using Genetic Algorithms](https://ieeexplore.ieee.org/document/7804223) by Noria Bidi and Zakaria Elberrichi
+
